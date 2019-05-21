@@ -10,7 +10,8 @@
     "next": "latest",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "spotify-web-api-node": "^4.0.0"
+    "spotify-web-api-node": "^4.0.0",
+    "styled-components": "^4.2.0"
   },
   "devDependencies": {
     "@types/next": "^8.0.1",
