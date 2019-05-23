@@ -1,7 +1,7 @@
 import React from 'react';
 import { IAlbum } from '../models/Album';
+import Album from '../components/Album';
 import styled from 'styled-components';
-import { UIDConsumer } from 'react-uid';
 
 const AlbumUl = styled.ul`
     align-items: center;
@@ -15,84 +15,54 @@ const AlbumLi = styled.li`
     list-style-type: none;
 `;
 
-const AlbumTitle = styled.div`
-    font-size: 10px;
-`;
-
-const AlbumArtists = styled.div`
-    font-size: 10px;
-`;
-
-const AlbumImg = styled.img`
-    display: block;
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-`;
-
-const AlbumCheckbox = styled.input`
-    display: none;
-    &:checked + label:before {
-      content: '✓';
-      background-color: grey;
-      transform: scale(1);
-  }
-`;
-
-const AlbumLabel = styled.label`
-    border: 1px solid #fff;
-    padding: 10px;
-    display: block;
-    position: relative;
-    margin: 10px;
-    cursor: pointer;
-
-    &:before {
-        background-color: white;
-        color: white;
-        content: ' ';
-        display: block;
-        border-radius: 50%;
-        border: 1px solid grey;
-        position: absolute;
-        top: -5px;
-        left: -5px;
-        width: 25px;
-        height: 25px;
-        text-align: center;
-        line-height: 28px;
-        transition-duration: 0.4s;
-        transform: scale(0);
-    }
-`;
-
-interface IProps {
+interface IAlbumListProps {
     albums: IAlbum[];
+    pushSelectedAlbum: (album: IAlbum) => {};
+    popSelectedAlbum: () => {};
 }
 
-export default class AlbumList extends React.Component<IProps> {
+interface IAlbumListState {
+    selectedAlbums: IAlbum[];
+}
+
+export default class AlbumList extends React.Component<IAlbumListProps, IAlbumListState> {
+    constructor(props: IAlbumListProps) {
+        super(props);
+        this.state = {
+            selectedAlbums: []
+        }
+    }
+
+    pushSelectedAlbum(checkedAlbum: IAlbum) {
+        this.setState((prevState: IAlbumListState) => {
+            console.log('prevState')
+            console.log(prevState)
+            selectedAlbums: prevState.selectedAlbums.push(checkedAlbum);
+        });
+    }
+
+    popSelectedAlbum(uncheckedAlbum: IAlbum) {
+        const selectedAlbums = this.state.selectedAlbums.filter(album => {
+            return album !== uncheckedAlbum;
+        });
+        this.setState({ selectedAlbums: selectedAlbums });
+    }
+
     render() {
         console.log(this.props);
-        if (this.props) {
+        if (this.props.albums) {
             return (
                 <AlbumUl>
                     {this.props.albums.map(album => (
                         <AlbumLi>
-                            <UIDConsumer>
-                                {id => (
-                                    <div>
-                                        <AlbumCheckbox type="checkbox" id={id} />
-                                        <AlbumLabel htmlFor={id}>
-                                            <AlbumTitle>{album.name}</AlbumTitle>
-                                            <AlbumArtists>{album.artists}</AlbumArtists>
-                                            <AlbumImg src={album.imageUrl} />
-                                        </AlbumLabel>
-                                    </div>
-                                )}
-                            </UIDConsumer>
+                            <Album album={album} check={this.pushSelectedAlbum.bind(this)} uncheck={this.popSelectedAlbum.bind(this)} />
                         </AlbumLi>
                     ))}
                 </AlbumUl>
+            );
+        } else {
+            return (
+                <div>no data</div>
             );
         }
     }
