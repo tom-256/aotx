@@ -3,6 +3,7 @@ import { IAlbum } from '../models/Album';
 import Album from '../components/Album';
 import styled from 'styled-components';
 
+const maxAlbumsCount = 9
 const AlbumUl = styled.ul`
     align-items: center;
     display: flex;
@@ -16,9 +17,7 @@ const AlbumLi = styled.li`
 `;
 
 interface IAlbumListProps {
-    albums: IAlbum[];
-    pushSelectedAlbum: (album: IAlbum) => {};
-    popSelectedAlbum: () => {};
+    searchResults: IAlbum[];
 }
 
 interface IAlbumListState {
@@ -35,34 +34,35 @@ export default class AlbumList extends React.Component<IAlbumListProps, IAlbumLi
 
     pushSelectedAlbum(checkedAlbum: IAlbum) {
         this.setState((prevState: IAlbumListState) => {
-            console.log('prevState')
-            console.log(prevState)
             selectedAlbums: prevState.selectedAlbums.push(checkedAlbum);
         });
     }
 
-    popSelectedAlbum(uncheckedAlbum: IAlbum) {
+    removeSelectedAlbum(uncheckedAlbum: IAlbum) {
         const selectedAlbums = this.state.selectedAlbums.filter(album => {
             return album !== uncheckedAlbum;
         });
         this.setState({ selectedAlbums: selectedAlbums });
     }
 
+    clearSelectedAlbum() {
+        this.setState({selectedAlbums: []})
+    }
+
     render() {
-        console.log(this.props);
-        if (this.props.albums) {
+        if (this.props.searchResults) {
             return (
                 <AlbumUl>
-                    {this.props.albums.map(album => (
+                    {this.props.searchResults.map(album => (
                         <AlbumLi>
-                            <Album album={album} check={this.pushSelectedAlbum.bind(this)} uncheck={this.popSelectedAlbum.bind(this)} />
+                            <Album album={album} check={this.pushSelectedAlbum.bind(this)} uncheck={this.removeSelectedAlbum.bind(this)} limit={9} selected={this.state.selectedAlbums.length}/>
                         </AlbumLi>
                     ))}
                 </AlbumUl>
             );
         } else {
             return (
-                <div>no data</div>
+                <div></div>
             );
         }
     }

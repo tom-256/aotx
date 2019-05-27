@@ -17,17 +17,19 @@ export default class App extends React.Component<{}, IAppState> {
     }
 
     async onChange(event: React.FormEvent<HTMLInputElement>) {
-        console.log(event.target.value);
-        const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
-        console.log(result.data);
-        this.setState({ seachedAlbums: result.data });
+        if (!event.target) {
+            this.setState({ seachedAlbums: [] });
+        }else{
+            const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
+            this.setState({ seachedAlbums: result.data });
+        }
     }
 
     public render() {
         return (
             <div>
                 <input type="form" onChange={e => this.onChange(e)} />
-                <AlbumList albums={this.state.seachedAlbums}></AlbumList>
+                <AlbumList searchResults={this.state.seachedAlbums}></AlbumList>
             </div>
         );
     }
