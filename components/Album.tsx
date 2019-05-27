@@ -22,7 +22,7 @@ const AlbumCheckbox = styled.input`
     display: none;
     &:checked + label:before {
         content: '✓';
-        background-color: light-green;
+        background-color: gray;
         transform: scale(1);
     }
 `;
@@ -58,8 +58,7 @@ interface IAlbumProps {
     album: IAlbum;
     check: (album: IAlbum) => void;
     uncheck: (album: IAlbum) => void;
-    selected: number;
-    limit: number;
+    canCheck: () => boolean;
 }
 
 export default class Album extends React.Component<IAlbumProps, IAlbumState> {
@@ -69,8 +68,13 @@ export default class Album extends React.Component<IAlbumProps, IAlbumState> {
 
     async onChange(event: React.FormEvent<HTMLInputElement>) {
         if (event.target.checked) {
-            if ()
-            this.props.check(this.props.album);
+            console.log('this.props.canCheck()')
+            console.log(this.props.canCheck())
+            if (this.props.canCheck()){
+                this.props.check(this.props.album);
+            }else{
+                event.target.checked = false
+            }
         } else {
             this.props.uncheck(this.props.album);
         }

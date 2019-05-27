@@ -3,7 +3,7 @@ import { IAlbum } from '../models/Album';
 import Album from '../components/Album';
 import styled from 'styled-components';
 
-const maxAlbumsCount = 9
+const selectedAlbumLimit = 9;
 const AlbumUl = styled.ul`
     align-items: center;
     display: flex;
@@ -29,7 +29,7 @@ export default class AlbumList extends React.Component<IAlbumListProps, IAlbumLi
         super(props);
         this.state = {
             selectedAlbums: []
-        }
+        };
     }
 
     pushSelectedAlbum(checkedAlbum: IAlbum) {
@@ -46,7 +46,16 @@ export default class AlbumList extends React.Component<IAlbumListProps, IAlbumLi
     }
 
     clearSelectedAlbum() {
-        this.setState({selectedAlbums: []})
+        this.setState({ selectedAlbums: [] });
+    }
+
+    canCheck() {
+        console.log(`this.state.selectedAlbums.length: ${this.state.selectedAlbums.length}`);
+        console.log(`selectedAlbumLimit: ${selectedAlbumLimit}`);
+        if (this.state.selectedAlbums.length < selectedAlbumLimit) {
+            return true;
+        }
+        return false;
     }
 
     render() {
@@ -55,15 +64,18 @@ export default class AlbumList extends React.Component<IAlbumListProps, IAlbumLi
                 <AlbumUl>
                     {this.props.searchResults.map(album => (
                         <AlbumLi>
-                            <Album album={album} check={this.pushSelectedAlbum.bind(this)} uncheck={this.removeSelectedAlbum.bind(this)} limit={9} selected={this.state.selectedAlbums.length}/>
+                            <Album
+                                album={album}
+                                check={this.pushSelectedAlbum.bind(this)}
+                                uncheck={this.removeSelectedAlbum.bind(this)}
+                                canCheck={this.canCheck.bind(this)}
+                            />
                         </AlbumLi>
                     ))}
                 </AlbumUl>
             );
         } else {
-            return (
-                <div></div>
-            );
+            return <div />;
         }
     }
 }
