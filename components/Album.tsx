@@ -68,12 +68,10 @@ export default class Album extends React.Component<IAlbumProps, IAlbumState> {
 
     async onChange(event: React.FormEvent<HTMLInputElement>) {
         if (event.target.checked) {
-            console.log('this.props.canCheck()')
-            console.log(this.props.canCheck())
-            if (this.props.canCheck()){
+            if (this.props.canCheck()) {
                 this.props.check(this.props.album);
-            }else{
-                event.target.checked = false
+            } else {
+                event.target.checked = false;
             }
         } else {
             this.props.uncheck(this.props.album);

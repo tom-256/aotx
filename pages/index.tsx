@@ -4,32 +4,31 @@ import AlbumList from '../components/AlbumList';
 import { IAlbum } from 'models/Album';
 
 interface IAppState {
-    seachedAlbums: IAlbum[];
-    selectedAlbums: IAlbum[];
+    searchResults: IAlbum[];
 }
 
 export default class App extends React.Component<{}, IAppState> {
     constructor(p: {}) {
         super(p);
         this.state = {
-            selectedAlbums: []
-        }
+            searchResults: []
+        };
     }
-
     async onChange(event: React.FormEvent<HTMLInputElement>) {
-        if (!event.target) {
-            this.setState({ seachedAlbums: [] });
-        }else{
+        if (event.target.value.length == 0) {
+            this.setState({ searchResults: [] });
+        } else {
+            this.setState({ searchResults: [] });
             const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
-            this.setState({ seachedAlbums: result.data });
+            this.setState({ searchResults: result.data });
         }
     }
 
     public render() {
         return (
             <div>
-                <input type="form" onChange={e => this.onChange(e)} />
-                <AlbumList searchResults={this.state.seachedAlbums}></AlbumList>
+                <input type="search" onChange={e => this.onChange(e)} />
+                <AlbumList searchResults={this.state.searchResults}/>
             </div>
         );
     }

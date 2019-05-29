@@ -50,15 +50,21 @@ export default class AlbumList extends React.Component<IAlbumListProps, IAlbumLi
     }
 
     canCheck() {
-        console.log(`this.state.selectedAlbums.length: ${this.state.selectedAlbums.length}`);
-        console.log(`selectedAlbumLimit: ${selectedAlbumLimit}`);
         if (this.state.selectedAlbums.length < selectedAlbumLimit) {
             return true;
         }
         return false;
     }
 
+    componentDidUpdate() {
+        console.log('componentDidUpdate');
+    }
+
     render() {
+        console.log('------');
+        console.log('render');
+        console.log('this.props.searchResults');
+        console.log(this.props.searchResults);
         if (this.props.searchResults) {
             return (
                 <AlbumUl>
