@@ -7,20 +7,20 @@ import { SelectedAlbumList } from '../components/SelectedAlbumList';
 const selectedAlbumLimit = 9;
 import { Child } from '../components/Child';
 
-interface IAppState {
+type AppState =  {
     searchResults: IAlbum[];
     selectedAlbums: IAlbum[];
-}
+};
 
-export default class App extends React.Component<{}, IAppState> {
+export default class App extends React.Component<{}, AppState> {
 
-    state: IAppState = {
+    state: AppState = {
         searchResults: [],
         selectedAlbums: [],
     };
 
     pushSelectedAlbum(checkedAlbum: IAlbum) {
-        this.setState((prevState: IAppState) => {
+        this.setState((prevState: AppState) => {
             selectedAlbums: prevState.selectedAlbums.push(checkedAlbum);
         });
     }
@@ -46,7 +46,7 @@ export default class App extends React.Component<{}, IAppState> {
 
     albumCheckBoxOnchange(e: React.FormEvent<HTMLInputElement>, album: IAlbum) {
         console.log('albumCheckBoxOnchange');
-        console.log(this.state);
+        console.log(this);
         // if (e.checked) {
         //     if (this.canCheck()) {
         //         this.pushSelectedAlbum(album);

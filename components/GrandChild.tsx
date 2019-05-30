@@ -2,11 +2,9 @@ import { ExampleContext } from '../contexts/album';
 
 export const GrandChild = props => (
     <ExampleContext.Consumer>
-        {({ data, hogeFunc, unchi }) => (
+        {({ handleOnchange }) => (
             <div>
-                <input type="checkbox" onChange={hogeFunc} />
-                <div>{data}</div>
-                <div>{unchi.hoge}</div>
+                <input type="checkbox" onChange={handleOnchange}/>
             </div>
         )}
     </ExampleContext.Consumer>

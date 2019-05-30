@@ -10,3 +10,5 @@ export type AlbumContextProps = {
 };
 
 export const AlbumContext = createContext<Partial<AlbumContextProps>>({});
+
+export const ExampleContext = createContext();
