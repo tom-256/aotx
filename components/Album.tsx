@@ -3,6 +3,11 @@ import { IAlbum } from '../models/Album';
 import styled from 'styled-components';
 import { UIDConsumer } from 'react-uid';
 
+const AlbumLi = styled.li`
+    margin: 12px;
+    list-style-type: none;
+`;
+
 const AlbumTitle = styled.div`
     font-size: 10px;
 `;
@@ -80,18 +85,20 @@ export default class Album extends React.Component<IAlbumProps, IAlbumState> {
 
     render() {
         return (
-            <UIDConsumer>
-                {id => (
-                    <div>
-                        <AlbumCheckbox type="checkbox" id={id} onChange={e => this.onChange(e)} />
-                        <AlbumLabel htmlFor={id}>
-                            <AlbumTitle>{this.props.album.name}</AlbumTitle>
-                            <AlbumArtists>{this.props.album.artists}</AlbumArtists>
-                            <AlbumImg src={this.props.album.imageUrl} />
-                        </AlbumLabel>
-                    </div>
-                )}
-            </UIDConsumer>
+            <AlbumLi>
+                <UIDConsumer>
+                    {id => (
+                        <div>
+                            <AlbumCheckbox type="checkbox" id={id} onChange={e => this.onChange(e)} />
+                            <AlbumLabel htmlFor={id}>
+                                <AlbumTitle>{this.props.album.name}</AlbumTitle>
+                                <AlbumArtists>{this.props.album.artists}</AlbumArtists>
+                                <AlbumImg src={this.props.album.imageUrl} />
+                            </AlbumLabel>
+                        </div>
+                    )}
+                </UIDConsumer>
+            </AlbumLi>
         );
     }
 }
