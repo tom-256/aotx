@@ -2,7 +2,7 @@ import React from 'react';
 import { IAlbum } from '../models/Album';
 import styled from 'styled-components';
 import { UIDConsumer } from 'react-uid';
-import { AlbumContext, AlbumContextProps } from '../contexts/album';
+import { AlbumContext } from '../contexts/album';
 
 const AlbumLi = styled.li`
     margin: 12px;
@@ -70,22 +70,17 @@ export const ContextAlbum: React.FunctionComponent<Props> = (props: { album: IAl
             <UIDConsumer>
                 {id => (
                     <div>
-                        {/* <AlbumContext.Consumer>{value => <AlbumCheckbox id={id} onChange={e => onChange(e, value.event)} />}</AlbumContext.Consumer>
-                        <AlbumLabel htmlFor={id}>
-                            <AlbumTitle>{props.album.name}</AlbumTitle>
-                            <AlbumArtists>{props.album.artists}</AlbumArtists>
-                            <AlbumImg src={props.album.imageUrl} />
-                        </AlbumLabel> */}
                         <AlbumContext.Consumer>
-                            {({ hoge }) => {
+                            {({ handleOnChange: handleOnchange }) => {
                                 return (
                                     <div>
-                                        <input type="checkbox" id={id} />
-                                        <label htmlFor={id}>
+                                        {/* <input type='checkbox' id={id} onChange={handleOnchange} ></input> */}
+                                        <AlbumCheckbox type='checkbox' id={id} onChange={handleOnchange} />
+                                        <AlbumLabel htmlFor={id}>
                                             <AlbumTitle>{props.album.name}</AlbumTitle>
                                             <AlbumArtists>{props.album.artists}</AlbumArtists>
                                             <AlbumImg src={props.album.imageUrl} />
-                                        </label>
+                                        </AlbumLabel>
                                     </div>
                                 );
                             }}

@@ -2,51 +2,49 @@ import React from 'react';
 import axios from 'axios';
 import { SearchedAlbumList } from '../components/SearchedAlbumList';
 import { IAlbum } from 'models/Album';
-import { AlbumContext, ExampleContext } from '../contexts/album';
+import { AlbumContext } from '../contexts/album';
 import { SelectedAlbumList } from '../components/SelectedAlbumList';
 const selectedAlbumLimit = 9;
-import { Child } from '../components/Child';
 
-type AppState =  {
+type AppState = {
     searchResults: IAlbum[];
     selectedAlbums: IAlbum[];
 };
 
 export default class App extends React.Component<{}, AppState> {
-
     state: AppState = {
         searchResults: [],
-        selectedAlbums: [],
+        selectedAlbums: []
     };
 
-    pushSelectedAlbum(checkedAlbum: IAlbum) {
+    pushSelectedAlbum = (checkedAlbum: IAlbum) => {
         this.setState((prevState: AppState) => {
             selectedAlbums: prevState.selectedAlbums.push(checkedAlbum);
         });
-    }
+    };
 
-    removeSelectedAlbum(uncheckedAlbum: IAlbum) {
+    removeSelectedAlbum = (uncheckedAlbum: IAlbum) => {
         const selectedAlbums = this.state.selectedAlbums.filter(album => {
             return album !== uncheckedAlbum;
         });
         this.setState({ selectedAlbums: selectedAlbums });
-    }
+    };
 
     clearSelectedAlbum() {
         this.setState({ selectedAlbums: [] });
     }
 
-    canCheck() {
+    canCheck = () => {
         console.log(this);
         if (this.state.selectedAlbums.length < selectedAlbumLimit) {
             return true;
         }
         return false;
-    }
+    };
 
-    albumCheckBoxOnchange(e: React.FormEvent<HTMLInputElement>, album: IAlbum) {
-        console.log('albumCheckBoxOnchange');
-        console.log(this);
+    albumCheckBoxOnchange = (e: React.FormEvent<HTMLInputElement>, album: IAlbum) => {
+        console.log('albumCheckBoxOnchange')
+        console.log(this)
         // if (e.checked) {
         //     if (this.canCheck()) {
         //         this.pushSelectedAlbum(album);
@@ -56,7 +54,7 @@ export default class App extends React.Component<{}, AppState> {
         // } else {
         //     this.removeSelectedAlbum(album);
         // }
-    }
+    };
 
     async onChange(event: React.FormEvent<HTMLInputElement>) {
         if (event.target.value.length == 0) {
@@ -127,9 +125,11 @@ export default class App extends React.Component<{}, AppState> {
     render() {
         return (
             <div>
-                <SelectedAlbumList selectedAlbums={this.state.selectedAlbums} />
-                <input type="search" onChange={e => this.onChange(e)} />
-                <SearchedAlbumList searchResults={this.state.searchResults} />
+                <AlbumContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
+                    <SelectedAlbumList selectedAlbums={this.state.selectedAlbums} />
+                    <input type="search" onChange={e => this.onChange(e)} />
+                    <SearchedAlbumList searchResults={this.state.searchResults} />
+                </AlbumContext.Provider>
             </div>
         );
     }
