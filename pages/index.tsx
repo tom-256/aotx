@@ -45,11 +45,11 @@ export default class App extends React.Component<{}, AppState> {
         console.log(this)
         console.log(e.target)
         console.log(album)
-        if (e.checked) {
+        if (e.target.checked) {
             if (this.canCheck()) {
                 this.pushSelectedAlbum(album);
             } else {
-                e.checked = false;
+                e.target.checked = false;
             }
         } else {
             this.removeSelectedAlbum(album);

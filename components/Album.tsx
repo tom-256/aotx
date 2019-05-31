@@ -2,6 +2,7 @@ import React from 'react';
 import { IAlbum } from '../models/Album';
 import styled from 'styled-components';
 import { UIDConsumer } from 'react-uid';
+import { AlbumContext } from '../contexts/album';
 
 const AlbumLi = styled.li`
     margin: 12px;
@@ -21,6 +22,11 @@ const AlbumImg = styled.img`
     width: 200px;
     height: 200px;
     object-fit: cover;
+`;
+
+const SelectedAlbumImg = styled(AlbumImg)`
+    width: 50px;
+    height: 50px;
 `;
 
 const AlbumCheckbox = styled.input`
@@ -59,46 +65,58 @@ const AlbumLabel = styled.label`
     }
 `;
 
-interface IAlbumProps {
+type Props = {
     album: IAlbum;
-    check: (album: IAlbum) => void;
-    uncheck: (album: IAlbum) => void;
-    canCheck: () => boolean;
-}
+};
 
-export default class Album extends React.Component<IAlbumProps, IAlbumState> {
-    constructor(props: IAlbumProps) {
-        super(props);
-    }
+export const SearchedAlbum: React.FunctionComponent<Props> = (props: { album: IAlbum }) => {
+    return (
+        <AlbumLi>
+            <UIDConsumer>
+                {id => (
+                    <div>
+                        <AlbumContext.Consumer>
+                            {({ handleOnChange: handleOnchange }) => {
+                                return (
+                                    <div>
+                                        <AlbumCheckbox type="checkbox" id={id} onChange={e => handleOnchange(e, props.album)} />
+                                        <AlbumLabel htmlFor={id}>
+                                            <AlbumTitle>{props.album.name}</AlbumTitle>
+                                            <AlbumArtists>{props.album.artists}</AlbumArtists>
+                                            <AlbumImg src={props.album.imageUrl} />
+                                        </AlbumLabel>
+                                    </div>
+                                );
+                            }}
+                        </AlbumContext.Consumer>
+                    </div>
+                )}
+            </UIDConsumer>
+        </AlbumLi>
+    );
+};
 
-    async onChange(event: React.FormEvent<HTMLInputElement>) {
-        if (event.target.checked) {
-            if (this.props.canCheck()) {
-                this.props.check(this.props.album);
-            } else {
-                event.target.checked = false;
-            }
-        } else {
-            this.props.uncheck(this.props.album);
-        }
-    }
-
-    render() {
-        return (
-            <AlbumLi>
-                <UIDConsumer>
-                    {id => (
-                        <div>
-                            <AlbumCheckbox type="checkbox" id={id} onChange={e => this.onChange(e)} />
-                            <AlbumLabel htmlFor={id}>
-                                <AlbumTitle>{this.props.album.name}</AlbumTitle>
-                                <AlbumArtists>{this.props.album.artists}</AlbumArtists>
-                                <AlbumImg src={this.props.album.imageUrl} />
-                            </AlbumLabel>
-                        </div>
-                    )}
-                </UIDConsumer>
-            </AlbumLi>
-        );
-    }
-}
+export const SelectedAlbum: React.FunctionComponent<Props> = (props: { album: IAlbum }) => {
+    return (
+        <AlbumLi>
+            <UIDConsumer>
+                {id => (
+                    <div>
+                        <AlbumContext.Consumer>
+                            {({ handleOnChange: handleOnchange }) => {
+                                return (
+                                    <div>
+                                        <AlbumCheckbox type="checkbox" id={id} onChange={e => handleOnchange(e, props.album)} />
+                                        <AlbumLabel htmlFor={id}>
+                                            <SelectedAlbumImg src={props.album.imageUrl} />
+                                        </AlbumLabel>
+                                    </div>
+                                );
+                            }}
+                        </AlbumContext.Consumer>
+                    </div>
+                )}
+            </UIDConsumer>
+        </AlbumLi>
+    );
+};
