@@ -35,7 +35,6 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     canCheck = () => {
-        console.log(this);
         if (this.state.selectedAlbums.length < selectedAlbumLimit) {
             return true;
         }
@@ -43,17 +42,18 @@ export default class App extends React.Component<{}, AppState> {
     };
 
     albumCheckBoxOnchange = (e: React.FormEvent<HTMLInputElement>, album: IAlbum) => {
-        console.log('albumCheckBoxOnchange')
         console.log(this)
-        // if (e.checked) {
-        //     if (this.canCheck()) {
-        //         this.pushSelectedAlbum(album);
-        //     } else {
-        //         e.checked = false;
-        //     }
-        // } else {
-        //     this.removeSelectedAlbum(album);
-        // }
+        console.log(e.target)
+        console.log(album)
+        if (e.checked) {
+            if (this.canCheck()) {
+                this.pushSelectedAlbum(album);
+            } else {
+                e.checked = false;
+            }
+        } else {
+            this.removeSelectedAlbum(album);
+        }
     };
 
     async onChange(event: React.FormEvent<HTMLInputElement>) {

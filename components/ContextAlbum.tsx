@@ -74,8 +74,7 @@ export const ContextAlbum: React.FunctionComponent<Props> = (props: { album: IAl
                             {({ handleOnChange: handleOnchange }) => {
                                 return (
                                     <div>
-                                        {/* <input type='checkbox' id={id} onChange={handleOnchange} ></input> */}
-                                        <AlbumCheckbox type='checkbox' id={id} onChange={handleOnchange} />
+                                        <AlbumCheckbox type='checkbox' id={id} onChange={e => handleOnchange(e, props.album)} />
                                         <AlbumLabel htmlFor={id}>
                                             <AlbumTitle>{props.album.name}</AlbumTitle>
                                             <AlbumArtists>{props.album.artists}</AlbumArtists>
