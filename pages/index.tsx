@@ -9,6 +9,7 @@ const selectedAlbumLimit = 9;
 type AppState = {
     searchResults: IAlbum[];
     selectedAlbums: IAlbum[];
+    isSearching: boolean;
 };
 
 export default class App extends React.Component<any, AppState> {
@@ -16,7 +17,8 @@ export default class App extends React.Component<any, AppState> {
         super(props);
         this.state = {
             searchResults: [],
-            selectedAlbums: []
+            selectedAlbums: [],
+            isSearching: false
         };
 
         this.pushSelectedAlbum = this.pushSelectedAlbum.bind(this);
@@ -61,14 +63,23 @@ export default class App extends React.Component<any, AppState> {
         }
     }
 
-    async onChange(event: React.FormEvent<HTMLInputElement>) {
+    delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    async searchFormOnChange(event: React.FormEvent<HTMLInputElement>) {
+        event.persist();
+        console.log(event.target.value);
+        console.log(this.state.isSearching);
+        if (this.state.isSearching == true) return;
+        await this.delay(1000);
         if (event.target.value.length == 0) {
             this.setState({ searchResults: [] });
-        } else {
-            this.setState({ searchResults: [] });
-            const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
+            console.log('search result is cleared');
 
-            this.setState({ searchResults: result.data });
+        } else {
+            this.setState({ searchResults: [], isSearching: true });
+            const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
+            console.log('api called');
+            console.log(result.data);
+            this.setState({ searchResults: result.data, isSearching: false });
         }
     }
 
@@ -81,7 +92,7 @@ export default class App extends React.Component<any, AppState> {
                     ))}
                 </div>
                 <AlbumContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
-                    <input type="search" onChange={e => this.onChange(e)} />
+                    <input type="search" onChange={e => this.searchFormOnChange(e)} />
                     <SearchedAlbumList searchResults={this.state.searchResults} />
                 </AlbumContext.Provider>
             </div>
