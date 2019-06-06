@@ -1,5 +1,6 @@
 import React from 'react';
 import { SearchedAlbumList } from '../components/SearchedAlbumList';
+import { SelectedAlbumContainer } from '../components/SelectedAlbumList';
 import { IAlbum } from 'models/Album';
 import { AlbumContext } from '../contexts/album';
 import axios from 'axios';
@@ -64,33 +65,54 @@ export default class App extends React.Component<any, AppState> {
     }
 
     delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    async searchAlbums(keyword: string) {
+        const albums: IAlbum[] = [];
+        return albums;
+    }
     async searchFormOnChange(event: React.FormEvent<HTMLInputElement>) {
+        console.log('---start---');
+        console.log('input event is called');
         event.persist();
+        event.preventDefault();
+        this.setState({ searchResults: [], isSearching: true });
+
         console.log(event.target.value);
-        console.log(this.state.isSearching);
-        if (this.state.isSearching == true) return;
-        await this.delay(1000);
+        console.log(`this.state.isSearching: ${this.state.isSearching}`);
+
+        // await this.delay(500);
+        if (this.state.isSearching == true) {
+            event.stopPropagation();
+            console.log('--- isSearching end---');
+
+            return;
+        }
         if (event.target.value.length == 0) {
             this.setState({ searchResults: [] });
-            console.log('search result is cleared');
+            console.log('---clear search result end---');
 
+            console.log('search result is cleared');
         } else {
-            this.setState({ searchResults: [], isSearching: true });
+            console.log(`this.state.isSearching have to true : ${this.state.isSearching}`);
             const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
             console.log('api called');
+            console.log('result');
+            console.log(result);
+            console.log('albums');
             console.log(result.data);
             this.setState({ searchResults: result.data, isSearching: false });
+            console.log('api called and setstate');
+            console.log('---call api end---');
         }
     }
 
     render() {
         return (
             <div>
-                <div>
+                <SelectedAlbumContainer>
                     {this.state.selectedAlbums.map(album => (
                         <img src={album.imageUrl} width="50" height="50" />
                     ))}
-                </div>
+                </SelectedAlbumContainer>
                 <AlbumContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
                     <input type="search" onChange={e => this.searchFormOnChange(e)} />
                     <SearchedAlbumList searchResults={this.state.searchResults} />
