@@ -28,7 +28,7 @@ async function searchAlbums(keyword: string) {
             artists.push(artist.name);
         });
         const imageUrl = album.images[albumImageIndexOf300x300].url;
-        const albumObject: IAlbum = { name: album.name, artists: artists.join(), imageUrl: imageUrl };
+        const albumObject: IAlbum = { id: album.id, name: album.name, artists: artists.join(), imageUrl: imageUrl };
         albums.push(albumObject);
     });
     return albums;
