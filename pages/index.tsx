@@ -10,7 +10,6 @@ const selectedAlbumLimit = 9;
 type AppState = {
     searchResults: IAlbum[];
     selectedAlbums: IAlbum[];
-    isSearching: boolean;
 };
 
 export default class App extends React.Component<any, AppState> {
@@ -18,8 +17,7 @@ export default class App extends React.Component<any, AppState> {
         super(props);
         this.state = {
             searchResults: [],
-            selectedAlbums: [],
-            isSearching: false
+            selectedAlbums: []
         };
 
         this.pushSelectedAlbum = this.pushSelectedAlbum.bind(this);
@@ -27,7 +25,10 @@ export default class App extends React.Component<any, AppState> {
         this.clearSelectedAlbum = this.clearSelectedAlbum.bind(this);
         this.canCheck = this.canCheck.bind(this);
         this.albumCheckBoxOnchange = this.albumCheckBoxOnchange.bind(this);
+        this.timer = null;
     }
+    
+    timer: NodeJS.Timeout;
 
     pushSelectedAlbum(checkedAlbum: IAlbum) {
         this.setState((prevState: AppState) => ({ selectedAlbums: [...prevState.selectedAlbums, checkedAlbum] }));
@@ -64,7 +65,6 @@ export default class App extends React.Component<any, AppState> {
         }
     }
 
-    delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     async searchAlbums(keyword: string) {
         const albums: IAlbum[] = [];
         return albums;
@@ -74,35 +74,27 @@ export default class App extends React.Component<any, AppState> {
         console.log('input event is called');
         event.persist();
         event.preventDefault();
-        this.setState({ searchResults: [], isSearching: true });
 
         console.log(event.target.value);
-        console.log(`this.state.isSearching: ${this.state.isSearching}`);
 
-        // await this.delay(500);
-        if (this.state.isSearching == true) {
-            event.stopPropagation();
-            console.log('--- isSearching end---');
-
-            return;
-        }
-        if (event.target.value.length == 0) {
-            this.setState({ searchResults: [] });
-            console.log('---clear search result end---');
-
-            console.log('search result is cleared');
-        } else {
-            console.log(`this.state.isSearching have to true : ${this.state.isSearching}`);
-            const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
-            console.log('api called');
-            console.log('result');
-            console.log(result);
-            console.log('albums');
-            console.log(result.data);
-            this.setState({ searchResults: result.data, isSearching: false });
-            console.log('api called and setstate');
-            console.log('---call api end---');
-        }
+        clearTimeout(this.timer);
+        this.timer = setTimeout(async () => {
+            if (event.target.value.length == 0) {
+                this.setState({ searchResults: [] });
+                console.log('---clear search result end---');
+                console.log('search result is cleared');
+            } else {
+                const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
+                console.log('api called');
+                console.log('result');
+                console.log(result);
+                console.log('albums');
+                console.log(result.data);
+                this.setState({ searchResults: result.data });
+                console.log('api called and setstate');
+                console.log('---call api end---');
+            }
+        }, 300);
     }
 
     render() {
