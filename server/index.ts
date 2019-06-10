@@ -41,7 +41,7 @@ app.prepare().then(() => {
             const parsedUrl = parse(req.url!, true);
             const { pathname, query } = parsedUrl;
             if (pathname === '/search') {
-                console.log('request received');
+                console.log(`search ${query.searchword.toString()}`);
                 const albums = await searchAlbums(query.searchword.toString());
                 console.log(albums);
                 console.log(albums.length);

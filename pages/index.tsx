@@ -20,39 +20,33 @@ export default class App extends React.Component<any, AppState> {
             selectedAlbums: []
         };
 
-        this.pushSelectedAlbum = this.pushSelectedAlbum.bind(this);
-        this.removeSelectedAlbum = this.removeSelectedAlbum.bind(this);
-        this.clearSelectedAlbum = this.clearSelectedAlbum.bind(this);
-        this.canCheck = this.canCheck.bind(this);
-        this.albumCheckBoxOnchange = this.albumCheckBoxOnchange.bind(this);
-        this.timer = null;
     }
-    
-    timer: NodeJS.Timeout;
 
-    pushSelectedAlbum(checkedAlbum: IAlbum) {
+    timer: NodeJS.Timeout = null;
+
+    pushSelectedAlbum = (checkedAlbum: IAlbum) => {
         this.setState((prevState: AppState) => ({ selectedAlbums: [...prevState.selectedAlbums, checkedAlbum] }));
     }
 
-    removeSelectedAlbum(uncheckedAlbum: IAlbum) {
+    removeSelectedAlbum = (uncheckedAlbum: IAlbum) => {
         const selectedAlbums = this.state.selectedAlbums.filter(album => {
             return album !== uncheckedAlbum;
         });
         this.setState({ selectedAlbums: selectedAlbums });
     }
 
-    clearSelectedAlbum() {
+    clearSelectedAlbum = () => {
         this.setState({ selectedAlbums: [] });
     }
 
-    canCheck() {
+    canCheck = () => {
         if (this.state.selectedAlbums.length < selectedAlbumLimit) {
             return true;
         }
         return false;
     }
 
-    albumCheckBoxOnchange(e: React.FormEvent<HTMLInputElement>, album: IAlbum) {
+    albumCheckBoxOnchange = (e: React.FormEvent<HTMLInputElement>, album: IAlbum) => {
         console.log(this.state);
         if (e.target.checked) {
             if (this.canCheck()) {
@@ -65,11 +59,7 @@ export default class App extends React.Component<any, AppState> {
         }
     }
 
-    async searchAlbums(keyword: string) {
-        const albums: IAlbum[] = [];
-        return albums;
-    }
-    async searchFormOnChange(event: React.FormEvent<HTMLInputElement>) {
+    searchFormOnChange = async (event: React.FormEvent<HTMLInputElement>) => {
         console.log('---start---');
         console.log('input event is called');
         event.persist();
