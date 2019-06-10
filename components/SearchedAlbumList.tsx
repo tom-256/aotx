@@ -12,7 +12,7 @@ const AlbumUl = styled.ul`
 export const SearchedAlbumList = (props: { searchResults: IAlbum[] }) => (
     <AlbumUl>
         {props.searchResults.map(album => (
-            <ContextAlbum album={album} />
+            <ContextAlbum album={album} key={album.id}/>
         ))}
     </AlbumUl>
 );

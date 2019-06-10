@@ -1,7 +1,6 @@
 import React from 'react';
 import { IAlbum } from '../models/Album';
 import styled from 'styled-components';
-import { UIDConsumer } from 'react-uid';
 import { AlbumContext } from '../contexts/album';
 
 const AlbumLi = styled.li`
@@ -67,26 +66,20 @@ type Props = {
 export const ContextAlbum: React.FunctionComponent<Props> = (props: { album: IAlbum }) => {
     return (
         <AlbumLi>
-            <UIDConsumer>
-                {id => (
-                    <div>
-                        <AlbumContext.Consumer>
-                            {({ handleOnChange: handleOnchange }) => {
-                                return (
-                                    <div>
-                                        <AlbumCheckbox type='checkbox' id={id} onChange={e => handleOnchange(e, props.album)} />
-                                        <AlbumLabel htmlFor={id}>
-                                            <AlbumTitle>{props.album.name}</AlbumTitle>
-                                            <AlbumArtists>{props.album.artists}</AlbumArtists>
-                                            <AlbumImg src={props.album.imageUrl} />
-                                        </AlbumLabel>
-                                    </div>
-                                );
-                            }}
-                        </AlbumContext.Consumer>
-                    </div>
-                )}
-            </UIDConsumer>
+            <AlbumContext.Consumer>
+                {({ handleOnChange: handleOnchange }) => {
+                    return (
+                        <div>
+                            <AlbumCheckbox type="checkbox" id={props.album.id} onChange={e => handleOnchange(e, props.album)} />
+                            <AlbumLabel htmlFor={props.album.id}>
+                                <AlbumTitle>{props.album.name}</AlbumTitle>
+                                <AlbumArtists>{props.album.artists}</AlbumArtists>
+                                <AlbumImg src={props.album.imageUrl} />
+                            </AlbumLabel>
+                        </div>
+                    );
+                }}
+            </AlbumContext.Consumer>
         </AlbumLi>
     );
 };

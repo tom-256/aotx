@@ -20,7 +20,7 @@ export const SelectedAlbumContainer = styled.div`
 export const SelectedAlbumList = (props: { selectedAlbums: IAlbum[] }) => (
     <AlbumUl>
         {props.selectedAlbums.map(album => (
-            <ContextAlbum album={album} />
+            <ContextAlbum album={album} key={album.id}/>
         ))}
     </AlbumUl>
 );
