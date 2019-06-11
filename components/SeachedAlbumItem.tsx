@@ -61,16 +61,17 @@ const AlbumLabel = styled.label`
 
 type Props = {
     album: IAlbum;
+    isSelected: boolean;
 };
 
-export const ContextAlbum: React.FunctionComponent<Props> = (props: { album: IAlbum }) => {
+export const SeachedAlbumItem: React.FunctionComponent<Props> = (props: { album: IAlbum; isSelected: boolean }) => {
     return (
         <AlbumLi>
             <AlbumContext.Consumer>
                 {({ handleOnChange: handleOnchange }) => {
                     return (
                         <div>
-                            <AlbumCheckbox type="checkbox" id={props.album.id} onChange={e => handleOnchange(e, props.album)} />
+                            <AlbumCheckbox type="checkbox" id={props.album.id} onChange={e => handleOnchange(e, props.album)} checked={props.isSelected} />
                             <AlbumLabel htmlFor={props.album.id}>
                                 <AlbumTitle>{props.album.name}</AlbumTitle>
                                 <AlbumArtists>{props.album.artists}</AlbumArtists>

@@ -3,6 +3,7 @@ import { SearchedAlbumList } from '../components/SearchedAlbumList';
 import { SelectedAlbumContainer } from '../components/SelectedAlbumContainer';
 import { IAlbum } from 'models/Album';
 import { AlbumContext } from '../contexts/album';
+import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 import axios from 'axios';
 
 const selectedAlbumLimit = 9;
@@ -19,35 +20,33 @@ export default class App extends React.Component<any, AppState> {
             searchResults: [],
             selectedAlbums: []
         };
-
     }
 
     timer: NodeJS.Timeout = null;
 
     pushSelectedAlbum = (checkedAlbum: IAlbum) => {
         this.setState((prevState: AppState) => ({ selectedAlbums: [...prevState.selectedAlbums, checkedAlbum] }));
-    }
+    };
 
     removeSelectedAlbum = (uncheckedAlbum: IAlbum) => {
         const selectedAlbums = this.state.selectedAlbums.filter(album => {
-            return album !== uncheckedAlbum;
+            return album.id !== uncheckedAlbum.id;
         });
         this.setState({ selectedAlbums: selectedAlbums });
-    }
+    };
 
     clearSelectedAlbum = () => {
         this.setState({ selectedAlbums: [] });
-    }
+    };
 
     canCheck = () => {
         if (this.state.selectedAlbums.length < selectedAlbumLimit) {
             return true;
         }
         return false;
-    }
+    };
 
     albumCheckBoxOnchange = (e: React.FormEvent<HTMLInputElement>, album: IAlbum) => {
-        console.log(this.state);
         if (e.target.checked) {
             if (this.canCheck()) {
                 this.pushSelectedAlbum(album);
@@ -57,7 +56,11 @@ export default class App extends React.Component<any, AppState> {
         } else {
             this.removeSelectedAlbum(album);
         }
-    }
+    };
+
+    selectedAlbumOnClick = (e: React.FormEvent<HTMLInputElement>, album: IAlbum) => {
+        this.removeSelectedAlbum(album);
+    };
 
     searchFormOnChange = async (event: React.FormEvent<HTMLInputElement>) => {
         console.log('---start---');
@@ -85,19 +88,17 @@ export default class App extends React.Component<any, AppState> {
                 console.log('---call api end---');
             }
         }, 300);
-    }
+    };
 
     render() {
         return (
             <div>
-                <SelectedAlbumContainer>
-                    {this.state.selectedAlbums.map(album => (
-                        <img src={album.imageUrl} width="50" height="50" />
-                    ))}
-                </SelectedAlbumContainer>
+                <SelectedAlbumContext.Provider value={{ handleOnClick: this.selectedAlbumOnClick }}>
+                    <SelectedAlbumContainer selectedAlbums={this.state.selectedAlbums} />
+                </SelectedAlbumContext.Provider>
                 <AlbumContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
                     <input type="search" onChange={e => this.searchFormOnChange(e)} />
-                    <SearchedAlbumList searchResults={this.state.searchResults} />
+                    <SearchedAlbumList searchResults={this.state.searchResults} selectedAlbums={this.state.selectedAlbums} />
                 </AlbumContext.Provider>
             </div>
         );
