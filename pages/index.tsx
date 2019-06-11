@@ -1,6 +1,6 @@
 import React from 'react';
 import { SearchedAlbumList } from '../components/SearchedAlbumList';
-import { SelectedAlbumContainer } from '../components/SelectedAlbumList';
+import { SelectedAlbumContainer } from '../components/SelectedAlbumContainer';
 import { IAlbum } from 'models/Album';
 import { AlbumContext } from '../contexts/album';
 import axios from 'axios';
