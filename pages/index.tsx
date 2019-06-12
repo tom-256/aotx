@@ -20,9 +20,10 @@ export default class App extends React.Component<any, AppState> {
             searchResults: [],
             selectedAlbums: []
         };
+        this.timer = null;
     }
 
-    timer: NodeJS.Timeout = null;
+    timer: NodeJS.Timeout | null;
 
     pushSelectedAlbum = (checkedAlbum: IAlbum) => {
         this.setState((prevState: AppState) => ({ selectedAlbums: [...prevState.selectedAlbums, checkedAlbum] }));
@@ -62,6 +63,13 @@ export default class App extends React.Component<any, AppState> {
         this.removeSelectedAlbum(album);
     };
 
+    resetTimer = () => {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+        this.timer = null;
+    }
+
     searchFormOnChange = async (event: React.FormEvent<HTMLInputElement>) => {
         console.log('---start---');
         console.log('input event is called');
@@ -70,7 +78,7 @@ export default class App extends React.Component<any, AppState> {
 
         console.log(event.target.value);
 
-        clearTimeout(this.timer);
+        this.resetTimer();
         this.timer = setTimeout(async () => {
             if (event.target.value.length == 0) {
                 this.setState({ searchResults: [] });

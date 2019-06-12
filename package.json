@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "nodemon",
     "build": "next build && tsc && tsc --project tsconfig.server.json",
-    "start": "cross-env NODE_ENV=production node .next/server"
+    "start": "cross-env NODE_ENV=production node .next/server",
+    "now-build": "next build"
   },
   "dependencies": {
     "@types/react-dom": "^16.8.4",
