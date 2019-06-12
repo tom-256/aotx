@@ -5,6 +5,7 @@ import { Album } from 'models/Album';
 import { SearchedResultContext } from '../contexts/SearchedResultContext';
 import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 import axios from 'axios';
+import querystring from 'querystring';
 
 const selectedAlbumLimit = 9;
 
@@ -85,7 +86,8 @@ export default class App extends React.Component<any, AppState> {
                 console.log('---clear search result end---');
                 console.log('search result is cleared');
             } else {
-                const result = await axios.get(`http://localhost:3000/search?searchword=${event.target.value}`);
+                const qs = querystring.stringify({searchword: event.target.value});
+                const result = await axios.get(`http://localhost:3000/search?${qs}`);
                 console.log('api called');
                 console.log('result');
                 console.log(result);
