@@ -1,5 +1,5 @@
 import React from 'react';
-import { IAlbum } from '../models/Album';
+import { Album } from '../models/Album';
 import styled from 'styled-components';
 import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 
@@ -9,10 +9,10 @@ const SelectedAlbumImg = styled.img`
 `;
 
 type Props = {
-    album: IAlbum;
+    album: Album;
 };
 
-export const SelectedAlbumItem: React.FunctionComponent<Props> = (props: { album: IAlbum }) => (
+export const SelectedAlbumItem: React.FunctionComponent<Props> = (props: { album: Album }) => (
     <SelectedAlbumContext.Consumer>
         {({ handleOnClick: handleOnClick }) => {
             return <SelectedAlbumImg src={props.album.imageUrl} onClick={e => handleOnClick(e, props.album)} />;

@@ -1,7 +1,7 @@
 import React from 'react';
-import { IAlbum } from '../models/Album';
+import { Album } from '../models/Album';
 import styled from 'styled-components';
-import { AlbumContext } from '../contexts/album';
+import { SearchedResultContext } from '../contexts/SearchedResultContext';
 
 const AlbumLi = styled.li`
     margin: 12px;
@@ -68,14 +68,14 @@ const AlbumLabel = styled.label`
 `;
 
 type Props = {
-    album: IAlbum;
+    album: Album;
     isSelected: boolean;
 };
 
-export const SeachedAlbumItem: React.FunctionComponent<Props> = (props: { album: IAlbum; isSelected: boolean }) => {
+export const SeachedAlbumItem: React.FunctionComponent<Props> = (props: { album: Album; isSelected: boolean }) => {
     return (
         <AlbumLi>
-            <AlbumContext.Consumer>
+            <SearchedResultContext.Consumer>
                 {({ handleOnChange: handleOnchange }) => {
                     return (
                         <div>
@@ -88,7 +88,7 @@ export const SeachedAlbumItem: React.FunctionComponent<Props> = (props: { album:
                         </div>
                     );
                 }}
-            </AlbumContext.Consumer>
+            </SearchedResultContext.Consumer>
         </AlbumLi>
     );
 };

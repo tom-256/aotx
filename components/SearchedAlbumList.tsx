@@ -1,4 +1,4 @@
-import { IAlbum } from '../models/Album';
+import { Album } from '../models/Album';
 import styled from 'styled-components';
 import { SeachedAlbumItem } from './SeachedAlbumItem';
 
@@ -9,8 +9,8 @@ const AlbumUl = styled.ul`
     list-style-type: none;
 `;
 
-export const SearchedAlbumList = (props: { searchResults: IAlbum[]; selectedAlbums: IAlbum[] }) => {
-    const isSelected = (album: IAlbum): boolean => {
+export const SearchedAlbumList = (props: { searchResults: Album[]; selectedAlbums: Album[] }) => {
+    const isSelected = (album: Album): boolean => {
         const hasSelectedAlbums = props.selectedAlbums.length > 0;
         const isSelected = props.selectedAlbums.some(selected => selected.id === album.id);
         if (hasSelectedAlbums && isSelected) return true;

@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import { parse } from 'url';
 import * as next from 'next';
-import { IAlbum } from '../models/Album';
+import { Album } from '../models/Album';
 const SpotifyWebApi = require('spotify-web-api-node');
 
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -21,14 +21,14 @@ async function initApiClient() {
 
 async function searchAlbums(keyword: string) {
     const result = await spotifyApi.searchAlbums(keyword);
-    let albums: IAlbum[] = [];
+    let albums: Album[] = [];
     result.body.albums.items.forEach((album: any) => {
         let artists: string[] = [];
         album.artists.forEach((artist: any) => {
             artists.push(artist.name);
         });
         const imageUrl = album.images[albumImageIndexOf300x300].url;
-        const albumObject: IAlbum = { id: album.id, name: album.name, artists: artists.join(), imageUrl: imageUrl };
+        const albumObject: Album = { id: album.id, name: album.name, artists: artists.join(), imageUrl: imageUrl };
         albums.push(albumObject);
     });
     return albums;

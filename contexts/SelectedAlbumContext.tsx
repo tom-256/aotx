@@ -1,8 +1,8 @@
 import { createContext } from 'react';
-import { IAlbum } from '../models/Album';
+import { Album } from '../models/Album';
 
 type SelectedAlbumContextProps = {
-    handleOnClick: (event: React.FormEvent<HTMLInputElement>, target: IAlbum) => void;
+    handleOnClick: (event: React.FormEvent<HTMLInputElement>, target: Album) => void;
 };
 
 export const SelectedAlbumContext = createContext<Partial<SelectedAlbumContextProps>>({});

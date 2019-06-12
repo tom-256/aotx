@@ -1,4 +1,4 @@
-import { IAlbum } from '../models/Album';
+import { Album } from '../models/Album';
 import styled from 'styled-components';
 import { SelectedAlbumItem } from './SelectedAlbumItem';
 
@@ -10,7 +10,7 @@ const SelectedAlbumDiv = styled.div`
     height: 150px;
 `;
 
-export const SelectedAlbumContainer = (props: { selectedAlbums: IAlbum[] }) => (
+export const SelectedAlbumContainer = (props: { selectedAlbums: Album[] }) => (
     <SelectedAlbumDiv>
         {props.selectedAlbums.map(album => (
             <SelectedAlbumItem album={album} key={album.id}/>
