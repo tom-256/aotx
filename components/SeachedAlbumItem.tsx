@@ -8,12 +8,20 @@ const AlbumLi = styled.li`
     list-style-type: none;
 `;
 
-const AlbumTitle = styled.div`
+const AlbumTitle = styled.p`
     font-size: 10px;
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
-const AlbumArtists = styled.div`
+const AlbumArtists = styled.p`
     font-size: 10px;
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const AlbumImg = styled.img`
@@ -73,8 +81,8 @@ export const SeachedAlbumItem: React.FunctionComponent<Props> = (props: { album:
                         <div>
                             <AlbumCheckbox type="checkbox" id={props.album.id} onChange={e => handleOnchange(e, props.album)} checked={props.isSelected} />
                             <AlbumLabel htmlFor={props.album.id}>
-                                <AlbumTitle>{props.album.name}</AlbumTitle>
-                                <AlbumArtists>{props.album.artists}</AlbumArtists>
+                                <AlbumTitle title={props.album.name}>{props.album.name}</AlbumTitle>
+                                <AlbumArtists title={props.album.artists}>{props.album.artists}</AlbumArtists>
                                 <AlbumImg src={props.album.imageUrl} />
                             </AlbumLabel>
                         </div>
