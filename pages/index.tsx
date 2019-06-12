@@ -4,7 +4,7 @@ import { SelectedAlbumContainer } from '../components/SelectedAlbumContainer';
 import { Album } from 'models/Album';
 import { SearchedResultContext } from '../contexts/SearchedResultContext';
 import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
-import axios from 'axios';
+import fetch from 'isomorphic-unfetch';
 import querystring from 'querystring';
 
 const selectedAlbumLimit = 9;
@@ -69,7 +69,7 @@ export default class App extends React.Component<any, AppState> {
             clearInterval(this.timer);
         }
         this.timer = null;
-    }
+    };
 
     searchFormOnChange = async (event: React.FormEvent<HTMLInputElement>) => {
         console.log('---start---');
@@ -83,19 +83,11 @@ export default class App extends React.Component<any, AppState> {
         this.timer = setTimeout(async () => {
             if (event.target.value.length == 0) {
                 this.setState({ searchResults: [] });
-                console.log('---clear search result end---');
-                console.log('search result is cleared');
             } else {
-                const qs = querystring.stringify({searchword: event.target.value});
-                const result = await axios.get(`http://localhost:3000/search?${qs}`);
-                console.log('api called');
-                console.log('result');
-                console.log(result);
-                console.log('albums');
-                console.log(result.data);
-                this.setState({ searchResults: result.data });
-                console.log('api called and setstate');
-                console.log('---call api end---');
+                const qs = querystring.stringify({ searchword: event.target.value });
+                const res = await fetch(`http://localhost:3000/search?${qs}`);
+                const data = await res.json();
+                this.setState({ searchResults: data });
             }
         }, 300);
     };
