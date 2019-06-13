@@ -24,7 +24,7 @@ export default class App extends React.Component<any, AppState> {
         this.timer = null;
     }
 
-    timer: NodeJS.Timeout | null;
+    timer: number | null;
 
     pushSelectedAlbum = (checkedAlbum: Album) => {
         this.setState((prevState: AppState) => ({ selectedAlbums: [...prevState.selectedAlbums, checkedAlbum] }));
@@ -100,6 +100,17 @@ export default class App extends React.Component<any, AppState> {
                 </SelectedAlbumContext.Provider>
                 <SearchedResultContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
                     <input type="search" onChange={e => this.searchFormOnChange(e)} />
+                    <div>
+                            <a
+                                href="https://twitter.com/intent/tweet?button_hashtag=aoty&ref_src=twsrc%5Etfw"
+                                className="twitter-hashtag-button"
+                                data-url="https://google.com/"
+                                data-show-count="false"
+                            >
+                                Tweet #aoty
+                            </a>
+                            <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
+                        </div>
                     <SearchedAlbumList searchResults={this.state.searchResults} selectedAlbums={this.state.selectedAlbums} />
                 </SearchedResultContext.Provider>
             </div>
