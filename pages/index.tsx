@@ -6,11 +6,13 @@ import { SearchedResultContext } from '../contexts/SearchedResultContext';
 import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 import fetch from 'isomorphic-unfetch';
 import querystring from 'querystring';
+import { SearchResult } from 'models/SearchResult';
 
 const selectedAlbumLimit = 9;
 
 type AppState = {
-    searchResults: Album[];
+    searchResult: SearchResult;
+    displayedAlbums: Album[];
     selectedAlbums: Album[];
 };
 
@@ -18,7 +20,8 @@ export default class App extends React.Component<any, AppState> {
     constructor(props: any) {
         super(props);
         this.state = {
-            searchResults: [],
+            searchResult: null,
+            displayedAlbums: [],
             selectedAlbums: []
         };
         this.timer = null;
@@ -82,12 +85,12 @@ export default class App extends React.Component<any, AppState> {
         this.resetTimer();
         this.timer = setTimeout(async () => {
             if (event.target.value.length == 0) {
-                this.setState({ searchResults: [] });
+                this.setState({ displayedAlbums: [] });
             } else {
                 const qs = querystring.stringify({ searchword: event.target.value });
                 const res = await fetch(`http://localhost:3000/search?${qs}`);
                 const data = await res.json();
-                this.setState({ searchResults: data });
+                this.setState({ displayedAlbums: data });
             }
         }, 300);
     };
@@ -111,7 +114,7 @@ export default class App extends React.Component<any, AppState> {
                             </a>
                             <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
                         </div>
-                    <SearchedAlbumList searchResults={this.state.searchResults} selectedAlbums={this.state.selectedAlbums} />
+                    <SearchedAlbumList searchResults={this.state.displayedAlbums} selectedAlbums={this.state.selectedAlbums} />
                 </SearchedResultContext.Provider>
             </div>
         );
