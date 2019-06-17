@@ -2,6 +2,7 @@ import { createServer } from 'http';
 import { parse } from 'url';
 import * as next from 'next';
 import { Album } from '../models/Album';
+import { SearchResult } from '../models/SearchResult';
 const SpotifyWebApi = require('spotify-web-api-node');
 
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -19,8 +20,17 @@ async function initApiClient() {
     await spotifyApi.setAccessToken(token.body['access_token']);
 }
 
-async function searchAlbums(keyword: string) {
-    const result = await spotifyApi.searchAlbums(keyword);
+async function searchAlbums(query: any) {
+    const q = query.searchword.toString();
+    let result;
+    if (query.offset){
+        const offset = query.offset.toString();
+        const option = {offset: offset}
+        result = await spotifyApi.searchAlbums(q, option);
+    }else{
+        result = await spotifyApi.searchAlbums(q);
+    }
+    console.log(result.body)
     let albums: Album[] = [];
     result.body.albums.items.forEach((album: any) => {
         let artists: string[] = [];
@@ -31,7 +41,10 @@ async function searchAlbums(keyword: string) {
         const albumObject: Album = { id: album.id, name: album.name, artists: artists.join(), imageUrl: imageUrl };
         albums.push(albumObject);
     });
-    return albums;
+    const next: string = result.body.albums.next;
+    const searchResult: SearchResult = { albums: albums, next: next };
+    console.log(searchResult);
+    return searchResult;
 }
 
 app.prepare().then(() => {
@@ -41,10 +54,7 @@ app.prepare().then(() => {
             const parsedUrl = parse(req.url!, true);
             const { pathname, query } = parsedUrl;
             if (pathname === '/search') {
-                console.log(`search ${query.searchword.toString()}`);
-                const albums = await searchAlbums(query.searchword.toString());
-                console.log(albums);
-                console.log(albums.length);
+                const albums = await searchAlbums(query);
                 res.end(JSON.stringify(albums));
             } else {
                 handle(req, res, parsedUrl);

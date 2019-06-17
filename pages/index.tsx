@@ -14,6 +14,7 @@ type AppState = {
     searchResult: SearchResult;
     displayedAlbums: Album[];
     selectedAlbums: Album[];
+    inputValue: string;
 };
 
 export default class App extends React.Component<any, AppState> {
@@ -22,7 +23,8 @@ export default class App extends React.Component<any, AppState> {
         this.state = {
             searchResult: null,
             displayedAlbums: [],
-            selectedAlbums: []
+            selectedAlbums: [],
+            inputValue: ''
         };
         this.timer = null;
     }
@@ -80,7 +82,7 @@ export default class App extends React.Component<any, AppState> {
         event.persist();
         event.preventDefault();
 
-        console.log(event.target.value);
+        this.setState({ inputValue: event.target.value });
 
         this.resetTimer();
         this.timer = setTimeout(async () => {
@@ -90,30 +92,65 @@ export default class App extends React.Component<any, AppState> {
                 const qs = querystring.stringify({ searchword: event.target.value });
                 const res = await fetch(`http://localhost:3000/search?${qs}`);
                 const data = await res.json();
-                this.setState({ displayedAlbums: data });
+                console.log(data);
+                const seachResult: SearchResult = { albums: data.albums, next: data.next };
+                this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
             }
         }, 300);
     };
 
+    isBottom = () => {
+        const rootLayer = document.getElementById('rootLayer');
+        if (rootLayer === null) return false;
+        return rootLayer.getBoundingClientRect().bottom <= window.innerHeight;
+    };
+
+    handleScroll = () => {
+        if (!this.isBottom()) return;
+        if (this.state.searchResult === null) return;
+        if (this.state.searchResult.next === null) return;
+        const found = this.state.searchResult.next.match(/(?<=offset=)(.*)(?=&)/g);
+        if (found === null) return;
+        const offset = found[0];
+        const qs = querystring.stringify({ searchword: this.state.inputValue, offset: offset });
+        this.resetTimer();
+        this.timer = setTimeout(async () => {
+            console.log(qs);
+            const res = await fetch(`http://localhost:3000/search?${qs}`);
+            const data = await res.json();
+            const searchedItems = data.albums;
+            const seachResult: SearchResult = { albums: searchedItems, next: data.next };
+            this.setState((prevState: AppState) => ({ displayedAlbums: [...prevState.displayedAlbums, ...searchedItems], searchResult: seachResult }));
+        }, 500);
+    };
+
+    componentDidMount() {
+        window.addEventListener('scroll', this.handleScroll);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll);
+    }
+
     render() {
         return (
-            <div>
+            <div id="rootLayer">
                 <SelectedAlbumContext.Provider value={{ handleOnClick: this.selectedAlbumOnClick }}>
                     <SelectedAlbumContainer selectedAlbums={this.state.selectedAlbums} />
                 </SelectedAlbumContext.Provider>
                 <SearchedResultContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
-                    <input type="search" onChange={e => this.searchFormOnChange(e)} />
+                    <input type="search" onChange={e => this.searchFormOnChange(e)} value={this.state.inputValue} />
                     <div>
-                            <a
-                                href="https://twitter.com/intent/tweet?button_hashtag=aoty&ref_src=twsrc%5Etfw"
-                                className="twitter-hashtag-button"
-                                data-url="https://google.com/"
-                                data-show-count="false"
-                            >
-                                Tweet #aoty
-                            </a>
-                            <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
-                        </div>
+                        <a
+                            href="https://twitter.com/intent/tweet?button_hashtag=aoty&ref_src=twsrc%5Etfw"
+                            className="twitter-hashtag-button"
+                            data-url="https://google.com/"
+                            data-show-count="false"
+                        >
+                            Tweet #aoty
+                        </a>
+                        <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
+                    </div>
                     <SearchedAlbumList searchResults={this.state.displayedAlbums} selectedAlbums={this.state.selectedAlbums} />
                 </SearchedResultContext.Provider>
             </div>

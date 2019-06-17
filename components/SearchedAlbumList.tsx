@@ -14,7 +14,6 @@ export const SearchedAlbumList = (props: { searchResults: Album[]; selectedAlbum
         const hasSelectedAlbums = props.selectedAlbums.length > 0;
         const isSelected = props.selectedAlbums.some(selected => selected.id === album.id);
         if (hasSelectedAlbums && isSelected) return true;
-        // console.log('islesected False');
         return false;
     };
     return (
