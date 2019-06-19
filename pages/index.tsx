@@ -7,6 +7,7 @@ import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 import fetch from 'isomorphic-unfetch';
 import querystring from 'querystring';
 import { SearchResult } from 'models/SearchResult';
+import Link from 'next/link'
 
 const selectedAlbumLimit = 9;
 
@@ -77,8 +78,6 @@ export default class App extends React.Component<any, AppState> {
     };
 
     searchFormOnChange = async (event: React.FormEvent<HTMLInputElement>) => {
-        console.log('---start---');
-        console.log('input event is called');
         event.persist();
         event.preventDefault();
 
@@ -90,9 +89,8 @@ export default class App extends React.Component<any, AppState> {
                 this.setState({ displayedAlbums: [] });
             } else {
                 const qs = querystring.stringify({ searchword: event.target.value });
-                const res = await fetch(`http://localhost:3000/search?${qs}`);
+                const res = await fetch(`/search?${qs}`);
                 const data = await res.json();
-                console.log(data);
                 const seachResult: SearchResult = { albums: data.albums, next: data.next };
                 this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
             }
@@ -115,8 +113,7 @@ export default class App extends React.Component<any, AppState> {
         const qs = querystring.stringify({ searchword: this.state.inputValue, offset: offset });
         this.resetTimer();
         this.timer = setTimeout(async () => {
-            console.log(qs);
-            const res = await fetch(`http://localhost:3000/search?${qs}`);
+            const res = await fetch(`/search?${qs}`);
             const data = await res.json();
             const searchedItems = data.albums;
             const seachResult: SearchResult = { albums: searchedItems, next: data.next };
@@ -140,17 +137,9 @@ export default class App extends React.Component<any, AppState> {
                 </SelectedAlbumContext.Provider>
                 <SearchedResultContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
                     <input type="search" onChange={e => this.searchFormOnChange(e)} value={this.state.inputValue} />
-                    <div>
-                        <a
-                            href="https://twitter.com/intent/tweet?button_hashtag=aoty&ref_src=twsrc%5Etfw"
-                            className="twitter-hashtag-button"
-                            data-url="https://google.com/"
-                            data-show-count="false"
-                        >
-                            Tweet #aoty
-                        </a>
-                        <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8" />
-                    </div>
+                    <Link href="/upload">
+                        <button>Create Image</button>
+                    </Link>
                     <SearchedAlbumList searchResults={this.state.displayedAlbums} selectedAlbums={this.state.selectedAlbums} />
                 </SearchedResultContext.Provider>
             </div>
