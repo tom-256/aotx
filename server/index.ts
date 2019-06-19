@@ -102,7 +102,6 @@ app.prepare().then(() => {
     server.get('/search', async (req, res) => {
         console.log(req);
         console.log(res);
-        await initApiClient();
         return;
     });
 
