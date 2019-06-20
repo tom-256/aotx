@@ -1,12 +1,12 @@
 import React from 'react';
 import { SearchedAlbumList } from '../components/SearchedAlbumList';
 import { SelectedAlbumContainer } from '../components/SelectedAlbumContainer';
-import { Album } from 'models/Album';
+import { Album } from '../models/Album';
 import { SearchedResultContext } from '../contexts/SearchedResultContext';
 import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 import fetch from 'isomorphic-unfetch';
 import querystring from 'querystring';
-import { SearchResult } from 'models/SearchResult';
+import { SearchResult } from '../models/SearchResult';
 import { config } from '../lib/config';
 
 const selectedAlbumLimit = 9;
