@@ -1,6 +1,7 @@
 import React from 'react';
 import { SearchedAlbumList } from '../components/SearchedAlbumList';
 import { SelectedAlbumContainer } from '../components/SelectedAlbumContainer';
+import { CreateImageForm } from '../components/CreateImageForm';
 import { Album } from 'models/Album';
 import { SearchedResultContext } from '../contexts/SearchedResultContext';
 import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
@@ -97,7 +98,7 @@ export default class App extends React.Component<any, AppState> {
                     }
                 });
                 const data = await res.json();
-                console.log(data)
+                console.log(data);
                 const seachResult: SearchResult = { albums: data.albums, next: data.next };
                 this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
             }
@@ -144,9 +145,7 @@ export default class App extends React.Component<any, AppState> {
                 </SelectedAlbumContext.Provider>
                 <SearchedResultContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
                     <input type="search" onChange={e => this.searchFormOnChange(e)} value={this.state.inputValue} />
-                    <form method="POST" action="/api/upload" encType="multipart/form-data">
-                        <input type="submit" value="create image" />
-                    </form>
+                    <CreateImageForm selectedAlbums={this.state.selectedAlbums} />
                     <SearchedAlbumList searchResults={this.state.displayedAlbums} selectedAlbums={this.state.selectedAlbums} />
                 </SearchedResultContext.Provider>
             </div>

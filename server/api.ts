@@ -49,11 +49,11 @@ const router = express.Router();
 
 router.post('/upload', (req, res) => {
     console.log('post upload');
+    console.log(req)
     return nextapp.render(req, res, '/share', req.query);
 });
 
 router.get('/search', async (req, res) => {
-    console.log('get search');
     try {
         const client = await initClient();
         console.log(req.baseUrl);
