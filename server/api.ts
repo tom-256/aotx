@@ -1,12 +1,13 @@
 import express from 'express';
 import nextapp from './nextapp';
 // import { format } from 'util';
-import SpotifyWebApi from 'spotify-web-api-node';
 import { Album } from '../models/Album';
 import { SearchResult } from '../models/SearchResult';
 // import * as multer from 'multer';
 // import { Storage } from '@google-cloud/storage';
+const SpotifyWebApi = require('spotify-web-api-node');
 
+const albumImageIndexOf300x300 = 1;
 const router = express.Router();
 // const storage = new Storage();
 
@@ -51,18 +52,19 @@ router.post('/upload', (req, res) => {
     return nextapp.render(req, res, '/share', req.query);
 });
 
-router.get('/search', async req => {
+router.get('/search', async (req, res) => {
     console.log('get search');
     try {
         const client = await initClient();
+        console.log(req.baseUrl);
         const albums = await searchAlbums(client, req.query);
-        return albums;
+        return res.send(albums);
     } catch (error) {
         throw error;
     }
 });
 
-const initClient = async (): Promise<SpotifyWebApi> => {
+const initClient = async () => {
     const spotifyApi = new SpotifyWebApi({
         clientId: process.env.SPOTIFY_CLIENT_ID,
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET
@@ -72,34 +74,25 @@ const initClient = async (): Promise<SpotifyWebApi> => {
     return spotifyApi;
 };
 
-const searchAlbums = async (client: SpotifyWebApi, query: string): Promise<SearchResult> => {
-    console.log('search albums');
+const searchAlbums = async (client: any, query: any): Promise<SearchResult> => {
+    const q = query.searchword.toString();
+    const result = query.offset ? await client.searchAlbums(q, { offset: query.offset }) : await client.searchAlbums(q);
+    if (result.statusCode != 200) throw Error('search api failer');
+    if (!result.body.albums) return { albums: [{ name: '', artists: '', id: '', imageUrl: '' }], next: '' };
+    let albums: Album[] = [];
+    console.log(result.body.albums);
 
-    console.log(query);
-    console.log(client);
-    const dummy: Album[] = [{ name: '', imageUrl: '', artists: '', id: '' }];
-    const searchResult: SearchResult = { albums: dummy, next: '' };
-    // const q = query.searchword.toString();
-    // let result;
-    // if (query.offset) {
-    //     const offset = query.offset.toString();
-    //     const option = { offset: offset };
-    //     result = await client.searchAlbums(q, option);
-    // } else {
-    //     result = await client.searchAlbums(q);
-    // }
-    // let albums: Album[] = [];
-    // result.body.albums.items.forEach((album: any) => {
-    //     let artists: string[] = [];
-    //     album.artists.forEach((artist: any) => {
-    //         artists.push(artist.name);
-    //     });
-    //     const imageUrl = album.images[albumImageIndexOf300x300].url;
-    //     const albumObject: Album = { id: album.id, name: album.name, artists: artists.join(), imageUrl: imageUrl };
-    //     albums.push(albumObject);
-    // });
-    // const next: string = result.body.albums.next;
-    // const searchResult: SearchResult = { albums: albums, next: next };
+    result.body.albums.items.forEach((album: any) => {
+        let artists: string[] = [];
+        album.artists.forEach((artist: any) => {
+            artists.push(artist.name);
+        });
+        const imageUrl = album.images[albumImageIndexOf300x300].url;
+        const albumObject: Album = { id: album.id, name: album.name, artists: artists.join(), imageUrl: imageUrl };
+        albums.push(albumObject);
+    });
+    const next: string = result.body.albums.next;
+    const searchResult: SearchResult = { albums: albums, next: next };
     return searchResult;
 };
 

@@ -90,18 +90,16 @@ export default class App extends React.Component<any, AppState> {
                 this.setState({ displayedAlbums: [] });
             } else {
                 const qs = querystring.stringify({ searchword: event.target.value });
-                console.log(qs);
-                console.log(`${config.server}/search?${qs}`);
                 const res = await fetch(`${config.server}/api/search?${qs}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         Accept: 'application/json'
                     }
                 });
-                console.log(res)
-                // const data = await res.json();
-                // const seachResult: SearchResult = { albums: data.albums, next: data.next };
-                // this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
+                const data = await res.json();
+                console.log(data)
+                const seachResult: SearchResult = { albums: data.albums, next: data.next };
+                this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
             }
         }, 300);
     };

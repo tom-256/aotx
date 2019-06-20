@@ -23,7 +23,6 @@
     "@types/next": "^8.0.1",
     "@types/react": "^16.8.8",
     "@types/react-dom": "^16.8.4",
-    "@types/spotify-web-api-node": "^4.0.0",
     "@types/styled-components": "^4.1.16",
     "@zeit/next-typescript": "^1.1.1",
     "babel-plugin-styled-components": "^1.10.0",
