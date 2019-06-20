@@ -1,28 +1,13 @@
-import * as next from 'next';
-import { Album } from '../models/Album';
-import { SearchResult } from '../models/SearchResult';
-import * as express from 'express';
-import * as multer from 'multer';
-import { Storage } from '@google-cloud/storage';
-import { format } from 'util';
+require("dotenv").config();
 
-const SpotifyWebApi = require('spotify-web-api-node');
+import * as express from 'express';
+import nextapp from './nextapp'
+import router from './api';
 
 const port = parseInt(process.env.PORT || '3000', 10);
-const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
-const handle = app.getRequestHandler();
-const albumImageIndexOf300x300 = 1;
-const storage = new Storage();
-if (process.env.GCLOUD_STORAGE_BUCKET === undefined) throw Error('set cloud storage');
-const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
 
-const multerStorage = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-        fileSize: 5 * 1024 * 1024 // no larger than 5mb, you can change as needed.
-    }
-});
+const handle = nextapp.getRequestHandler();
+// const albumImageIndexOf300x300 = 1;
 
 // async function initApiClient() {
 //     const spotifyApi = new SpotifyWebApi({
@@ -60,49 +45,17 @@ const multerStorage = multer({
 //     return searchResult;
 // }
 
-app.prepare().then(() => {
+nextapp.prepare().then(() => {
     const server = express();
 
-    server.get('/', (req, res) => {
-        console.log('render root');
+    server.use('/api', router);
+
+    server.get('*', (req, res) => {
         return handle(req, res);
     });
 
-    server.get('/share', (req, res) => {
-        console.log('render share');
-        return handle(req, res);
-    });
-
-    server.post('/upload', multerStorage.single('file'), (req, res, next) => {
-        console.log('received /upload');
-        if (!req.file) {
-            res.status(400).send('No file uploaded.');
-            return;
-        }
-
-        // Create a new blob in the bucket and upload the file data.
-        const blob = bucket.file(req.file.originalname);
-        const blobStream = blob.createWriteStream({
-            resumable: false
-        });
-
-        blobStream.on('error', err => {
-            next(err);
-        });
-
-        blobStream.on('finish', () => {
-            // The public URL can be used to directly access the file via HTTP.
-            const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
-            res.status(200).send(publicUrl);
-        });
-
-        blobStream.end(req.file.buffer);
-    });
-
-    server.get('/search', async (req, res) => {
-        console.log(req);
-        console.log(res);
-        return;
+    server.post('/api/upload', () => {
+        console.log('hogehoge')
     });
 
     server.listen(port, err => {

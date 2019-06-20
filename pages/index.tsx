@@ -7,7 +7,8 @@ import { SelectedAlbumContext } from '../contexts/SelectedAlbumContext';
 import fetch from 'isomorphic-unfetch';
 import querystring from 'querystring';
 import { SearchResult } from 'models/SearchResult';
-import Link from 'next/link'
+import Link from 'next/link';
+import { config } from '../lib/config';
 
 const selectedAlbumLimit = 9;
 
@@ -78,6 +79,7 @@ export default class App extends React.Component<any, AppState> {
     };
 
     searchFormOnChange = async (event: React.FormEvent<HTMLInputElement>) => {
+        console.log('input onchange');
         event.persist();
         event.preventDefault();
 
@@ -89,10 +91,19 @@ export default class App extends React.Component<any, AppState> {
                 this.setState({ displayedAlbums: [] });
             } else {
                 const qs = querystring.stringify({ searchword: event.target.value });
-                const res = await fetch(`/search?${qs}`);
-                const data = await res.json();
-                const seachResult: SearchResult = { albums: data.albums, next: data.next };
-                this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
+                console.log(qs);
+                console.log(`${config.server}/search?${qs}`);
+                // const res = await fetch(`${config.server}/search?${qs}`, {
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         Accept: 'application/json'
+                //     }
+                // });
+                const res = await fetch(`http://localhost:3000/api/search`);
+                console.log(res)
+                // const data = await res.json();
+                // const seachResult: SearchResult = { albums: data.albums, next: data.next };
+                // this.setState({ displayedAlbums: data.albums, searchResult: seachResult });
             }
         }, 300);
     };
@@ -113,7 +124,7 @@ export default class App extends React.Component<any, AppState> {
         const qs = querystring.stringify({ searchword: this.state.inputValue, offset: offset });
         this.resetTimer();
         this.timer = setTimeout(async () => {
-            const res = await fetch(`/search?${qs}`);
+            const res = await fetch(`${config.server}/search?${qs}`);
             const data = await res.json();
             const searchedItems = data.albums;
             const seachResult: SearchResult = { albums: searchedItems, next: data.next };
@@ -137,9 +148,9 @@ export default class App extends React.Component<any, AppState> {
                 </SelectedAlbumContext.Provider>
                 <SearchedResultContext.Provider value={{ handleOnChange: this.albumCheckBoxOnchange }}>
                     <input type="search" onChange={e => this.searchFormOnChange(e)} value={this.state.inputValue} />
-                    <Link href="/upload">
-                        <button>Create Image</button>
-                    </Link>
+                    <form method="POST" action="/api/upload" encType="multipart/form-data">
+                        <input type="submit" value="create image"></input>
+                    </form>
                     <SearchedAlbumList searchResults={this.state.displayedAlbums} selectedAlbums={this.state.selectedAlbums} />
                 </SearchedResultContext.Provider>
             </div>
