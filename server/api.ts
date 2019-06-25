@@ -1,62 +1,77 @@
 import express from 'express';
 import nextapp from './nextapp';
-// import { format } from 'util';
+import { format } from 'util';
 import { Album } from '../models/Album';
 import { SearchResult } from '../models/SearchResult';
-// import * as multer from 'multer';
-// import { Storage } from '@google-cloud/storage';
+import { Storage } from '@google-cloud/storage';
+import Canvas from 'canvas';
 const SpotifyWebApi = require('spotify-web-api-node');
 
 const albumImageIndexOf300x300 = 1;
+const canvasWidth = 900;
+const canvasHeight = 900;
 const router = express.Router();
-// const storage = new Storage();
 
-// if (process.env.GCLOUD_STORAGE_BUCKET === undefined) throw Error('set cloud storage');
-// const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+const createImageBuff = async (selectedAlbums: Album[]): Promise<Buffer> => {
+    const canvas = Canvas.createCanvas(canvasWidth, canvasHeight);
+    const ctx = canvas.getContext('2d');
 
-// const multerStorage = multer({
-//     storage: multer.memoryStorage(),
-//     limits: {
-//         fileSize: 5 * 1024 * 1024 // no larger than 5mb, you can change as needed.
-//     }
-// });
+    for (let xIndex = 0; xIndex <= 600; xIndex = xIndex + 300) {
+        for (let yIndex = 0; yIndex <= 600; yIndex = yIndex + 300) {
+            if (selectedAlbums.length > 0) {
+                const url = selectedAlbums.shift();
+                if (!url) continue;
+                const i = await Canvas.loadImage(url.imageUrl);
+                ctx.drawImage(i, xIndex, yIndex);
+            }
+        }
+    }
+    return canvas.toBuffer();
+};
 
-// router.post('/upload', multerStorage.single('file'), (req, res, next) => {
-//   console.log('received /upload');
-//   if (!req.file) {
-//       res.status(400).send('No file uploaded.');
-//       return;
-//   }
+const makeid = (length: number): string => {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
 
-//   // Create a new blob in the bucket and upload the file data.
-//   const blob = bucket.file(req.file.originalname);
-//   const blobStream = blob.createWriteStream({
-//       resumable: false
-//   });
+const saveImageToStorage = async (imageBuffer: Buffer) => {
+    const storage = new Storage();
+    if (process.env.GCLOUD_STORAGE_BUCKET === undefined) throw Error('set cloud storage');
+    const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+    const filename = `${Date.now()}${makeid(8)}.png`;
+    const blob = bucket.file(filename);
+    const blobStream = blob.createWriteStream({
+        resumable: false
+    });
+    blobStream.on('error', err => {
+        console.log(err);
+        throw err;
+    });
+    blobStream.on('finish', () => {
+        const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
+        console.log(publicUrl);
+        return publicUrl;
+    });
+    blobStream.end(imageBuffer);
+};
 
-//   blobStream.on('error', err => {
-//       next(err);
-//   });
-
-//   blobStream.on('finish', () => {
-//       // The public URL can be used to directly access the file via HTTP.
-//       const publicUrl = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
-//       res.status(200).send(publicUrl);
-//   });
-
-//   blobStream.end(req.file.buffer);
-// });
-
-router.post('/upload', (req, res) => {
+router.post('/upload', async (req, res) => {
     console.log('post upload');
-    console.log(req)
-    return nextapp.render(req, res, '/share', req.query);
+    const selectedAlbums = req.body;
+    const imageBuff = await createImageBuff(selectedAlbums);
+    const publicUrl = await saveImageToStorage(imageBuff);
+    console.log(publicUrl);
+    return nextapp.render(req, res, '/share');
 });
 
 router.get('/search', async (req, res) => {
     try {
         const client = await initClient();
-        console.log(req.baseUrl);
         const albums = await searchAlbums(client, req.query);
         return res.send(albums);
     } catch (error) {
@@ -80,8 +95,6 @@ const searchAlbums = async (client: any, query: any): Promise<SearchResult> => {
     if (result.statusCode != 200) throw Error('search api failer');
     if (!result.body.albums) return { albums: [{ name: '', artists: '', id: '', imageUrl: '' }], next: '' };
     let albums: Album[] = [];
-    console.log(result.body.albums);
-
     result.body.albums.items.forEach((album: any) => {
         let artists: string[] = [];
         album.artists.forEach((artist: any) => {

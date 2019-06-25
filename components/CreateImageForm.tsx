@@ -7,10 +7,14 @@ type CreateImageFormProps = {
 export const CreateImageForm: React.FunctionComponent<CreateImageFormProps> = (props: CreateImageFormProps) => {
     const onClick = async () => {
         console.log('button onsubmit')
+        console.log(JSON.stringify(props.selectedAlbums))
         await fetch(`${config.server}/api/upload`, {
             method: 'post',
-            body: JSON.stringify(props.selectedAlbums),
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+            body: JSON.stringify(props.selectedAlbums)
         });
     };
     return (

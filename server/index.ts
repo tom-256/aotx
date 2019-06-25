@@ -1,8 +1,9 @@
-require("dotenv").config();
+require('dotenv').config();
 
 import express from 'express';
-import nextapp from './nextapp'
+import nextapp from './nextapp';
 import router from './api';
+import bodyParser from 'body-parser';
 
 const port = parseInt(process.env.PORT || '3000', 10);
 
@@ -11,6 +12,7 @@ const handle = nextapp.getRequestHandler();
 nextapp.prepare().then(() => {
     const server = express();
 
+    server.use(bodyParser.json());
     server.use('/api', router);
 
     server.get('*', (req, res) => {
