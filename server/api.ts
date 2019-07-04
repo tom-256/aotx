@@ -1,5 +1,5 @@
 import express from 'express';
-import nextapp from './nextapp';
+import nextapp from '../server/nextapp';
 import { format } from 'util';
 import { Album } from '../models/Album';
 import { SearchResult } from '../models/SearchResult';
